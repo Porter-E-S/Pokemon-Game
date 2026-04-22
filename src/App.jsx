@@ -6,6 +6,7 @@ import './App.css'
 import Start from './Start.jsx'
 import SelectTeam from './SelectTeam.jsx'
 import Battle from './Battle.jsx'
+import Error404 from './Error404.jsx'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
 function App() {
@@ -17,13 +18,14 @@ function App() {
     <nav>
       links for testing:{" "}
         <Link to="/">Home</Link> |{" "}
-        <Link to="/team">SelectTeam</Link> |{" "}
+        <Link to="/pokemon">SelectTeam</Link> |{" "}
         <Link to="/battle">Battle</Link>
       </nav>
       <Routes>
         <Route path="/" element={<Start />} />
-        <Route path="/team" element={<SelectTeam />} />
+        <Route path="/pokemon" element={<SelectTeam />} />
         <Route path="/battle" element={<Battle />} />
+        <Route path="*" element={<Error404 />} />
       </Routes>
     </BrowserRouter>
   )
