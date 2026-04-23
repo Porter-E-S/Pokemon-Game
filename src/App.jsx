@@ -6,7 +6,11 @@ import './App.css'
 import Start from './Start.jsx'
 import SelectTeam from './SelectTeam.jsx'
 import Battle from './Battle.jsx'
+<<<<<<< HEAD
 import Error404 from './Error404.jsx'
+=======
+import Results from './Results.jsx'
+>>>>>>> 9963c09 (finished battle screen logic and stylizing. Also added results screens with links to select team page and favorites page)
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
 function App() {
@@ -25,7 +29,11 @@ function App() {
         <Route path="/" element={<Start />} />
         <Route path="/pokemon" element={<SelectTeam />} />
         <Route path="/battle" element={<Battle />} />
+<<<<<<< HEAD
         <Route path="*" element={<Error404 />} />
+=======
+        <Route path="/result" element={<Results />} />
+>>>>>>> 9963c09 (finished battle screen logic and stylizing. Also added results screens with links to select team page and favorites page)
       </Routes>
     </BrowserRouter>
   )

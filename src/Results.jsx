@@ -1,10 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import './Results.css'
 
 function Results() {
+    const location = useLocation()
+    const won = location.state?.won
+
     return (
         <>
-        <h1>Win or Loss</h1>
-        <Link to="/team"><button>Start Another Battle?</button></Link>
+            <img src={won ? '/win.jpg' : '/lose.png'} alt={won ? 'You win!' : 'You lose!'} />
+            <div className="results-buttons">
+                <Link to="/team"><button>Play again?</button></Link>
+                <button>Add pokemon to favorites?</button>
+            </div>
         </>
     )
 }

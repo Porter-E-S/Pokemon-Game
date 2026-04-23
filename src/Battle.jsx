@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import {useState, useEffect} from 'react'
 import {useNavigate} from 'react-router-dom'
+import './Battle.css'
 
 const TYPE_MATCHUPS = {
     grass: {
@@ -136,11 +137,18 @@ function Battle() {
   const [log, setLog] = useState([])
   const [phase, setPhase] = useState("loading")
   const navigate = useNavigate()
+  const [playerAnimation, setPlayerAnimation] = useState(null)
+  const [cpuAnimation, setCpuAnimation] = useState(null)
+  const [damagePopup, setDamagePopup] = useState(null)
+  const [moveAnnouncement, setMoveAnnouncement] = useState(null)
   //loads teams
   useEffect(() => {
     const loadTeams = async () => {
-      const ids = getRandomIds(3)
-      const cpuTeam = await Promise.all(ids.map(id => fetchPokemon(id)))
+      const cpuIds = getRandomIds(3)
+      const playerIds = getRandomIds(3)
+      const playerTeam = await Promise.all(playerIds.map(id => fetchPokemon(id)))
+      const cpuTeam = await Promise.all(cpuIds.map(id => fetchPokemon(id)))
+      setPlayerParty(playerTeam)
       setCpuParty(cpuTeam)
       setPhase("player-turn")
     }
@@ -158,69 +166,141 @@ function Battle() {
 
   //this is for taking the dmg and applying it to the cpus selected pokemon
   const playerAttack = (moveIndex) => {
-    const multiplier = getMultiplier(playerPokemon.type, cpuPokemon.type)
-    const damage = Math.round(playerPokemon.attack * multiplier)
+    setPhase("announcing")
+    setMoveAnnouncement(`${playerPokemon.name} used ${playerPokemon.moves[moveIndex]}!`)
 
-    const updatedCpuParty = cpuParty.map((pokemon, i) => {
-      if (i === cpuIndex) {
-      return {...pokemon, currentHp: Math.max(0, pokemon.currentHp - damage) }
-  }
-    return pokemon
-  })
-  setCpuParty(updatedCpuParty)
-  //once pokemon start fainting, they will swap out automatically or end the game
-    if (updatedCpuParty[cpuIndex].currentHp === 0) {
-      if (cpuIndex + 1 >= cpuParty.length) {
-        setPhase("game-over")
-        navigate('/result')
+    setTimeout(() => {
+      setMoveAnnouncement(null)
+      setPlayerAnimation("attack")
+      setTimeout(() => setCpuAnimation("hit"), 300)
+      const multiplier = getMultiplier(playerPokemon.type, cpuPokemon.type)
+      const damage = Math.round((playerPokemon.attack * multiplier)/5)
+      setDamagePopup({target: "cpu", amount: damage})
+
+      const updatedCpuParty = cpuParty.map((pokemon, i) => {
+        if (i === cpuIndex) {
+          return {...pokemon, currentHp: Math.max(0, pokemon.currentHp - damage) }
+        }
+        return pokemon
+      })
+      setCpuParty(updatedCpuParty)
+
+      if (updatedCpuParty[cpuIndex].currentHp === 0) {
+        setMoveAnnouncement(`${cpuPokemon.name} fainted!`)
+        if (cpuIndex + 1 >= cpuParty.length) {
+          setTimeout(() => {
+            setMoveAnnouncement(null)
+            setPhase("game-over")
+            navigate('/result', { state: { won: true } })
+          }, 1500)
+        } else {
+          setTimeout(() => {
+            setMoveAnnouncement(null)
+            setCpuIndex(cpuIndex + 1)
+            setTimeout(() => cpuAttack(cpuParty[cpuIndex + 1]), 1000)
+          }, 1500)
+        }
       } else {
-        setCpuIndex(cpuIndex + 1)
+        setTimeout(() => cpuAttack(), 1000)
       }
-    } else {
-      setPhase("cpu-turn")
-      //makes the damage take a second before it happens, feels more natural
-      setTimeout(() => {
-        cpuAttack()
-      }, 1000)
-    }
-}
+    }, 1000)
+  }
 
-const cpuAttack = () => {
-  const multiplier = getMultiplier(cpuPokemon.type, playerPokemon.type)
-  const damage = Math.round(cpuPokemon.attack * multiplier)
+const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
+  const cpuMoveIndex = Math.floor(Math.random() * activeCpuPokemon.moves.length)
+  setMoveAnnouncement(`${activeCpuPokemon.name} used ${activeCpuPokemon.moves[cpuMoveIndex]}!`)
+  setPhase("announcing")
 
-  const updatedPlayerParty = playerParty.map((pokemon, i) => {
-    if (i === playerIndex) {
-      return {...pokemon, currentHp: Math.max(0, pokemon.currentHp - damage) }
-    }
-    return pokemon
-  })
-  setPlayerParty(updatedPlayerParty)
+  setTimeout(() => {
+    setMoveAnnouncement(null)
+    const multiplier = getMultiplier(activeCpuPokemon.type, playerPokemon.type)
+    const damage = Math.round((activeCpuPokemon.attack * multiplier)/5)
+    setCpuAnimation("attack")
+    setTimeout(() => setPlayerAnimation("hit"), 300)
+    setDamagePopup({target: "player", amount: damage})
+
+    const updatedPlayerParty = playerParty.map((pokemon, i) => {
+      if (i === playerIndex) {
+        return {...pokemon, currentHp: Math.max(0, pokemon.currentHp - damage) }
+      }
+      return pokemon
+    })
+    setPlayerParty(updatedPlayerParty)
+
     if (updatedPlayerParty[playerIndex].currentHp === 0) {
+      setMoveAnnouncement(`${playerPokemon.name} fainted!`)
       if (playerIndex + 1 >= playerParty.length) {
-        setPhase("game-over")
-        navigate('/result')
+        setTimeout(() => {
+          setMoveAnnouncement(null)
+          setPhase("game-over")
+          navigate('/result', { state: { won: false } })
+        }, 1500)
       } else {
-        setPlayerIndex(playerIndex + 1)
-      } 
+        setTimeout(() => {
+          setMoveAnnouncement(null)
+          setPlayerIndex(playerIndex + 1)
+          setPhase("player-turn")
+        }, 1500)
+      }
     } else {
       setPhase("player-turn")
     }
+  }, 1000)
 }
 
   return (
   <>
-    <>
-    <h1>{cpuPokemon.name} [{cpuPokemon.type}]</h1>
-    <p>HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
-    <img src={cpuPokemon.sprite} alt={playerPokemon.name}/>
-    </>
+    <div className="battle-arena">
+      <div
+      className={`cpu-pokemon ${cpuAnimation || ""}`}
+      onAnimationEnd={() => setCpuAnimation(null)}
+    >
+      {damagePopup?.target === "cpu" && (
+        <span className="damage-popup" onAnimationEnd={() => setDamagePopup(null)}>
+          -{damagePopup.amount}
+        </span>
+      )}
+        <h1>{cpuPokemon.name} [{cpuPokemon.type}]</h1>
+        <p>HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
+        <div className="health-bar-bg">
+          <div className="health-bar" style={{width: `${(cpuPokemon.currentHp / cpuPokemon.maxHp) * 100}%`}}></div>
+        </div>
+        <img src={cpuPokemon.sprite} alt={playerPokemon.name}/>
+        <div className="pokeballs">
+          {cpuParty.map((p, i) => (
+            <span key={i}>{p.currentHp === 0 ? '⚫️' : '🔴'}</span>
+          ))}
+        </div>
+      </div>
 
-    <>
-    <h1>{playerPokemon.name} [{playerPokemon.type}]</h1>
-    <p>HP: {playerPokemon.currentHp} / {playerPokemon.maxHp}</p>
-    <img src={playerPokemon.sprite} alt={playerPokemon.name}/>
-    </>
+      <div
+        className={`player-pokemon ${playerAnimation || ""}`}
+        onAnimationEnd={() => setPlayerAnimation(null)}
+      >
+        {damagePopup?.target === "player" && (
+          <span className="damage-popup" onAnimationEnd={() => setDamagePopup(null)}>
+            -{damagePopup.amount}
+          </span>
+        )}
+        <h1>{playerPokemon.name} [{playerPokemon.type}]</h1>
+        <p>HP: {playerPokemon.currentHp} / {playerPokemon.maxHp}</p>
+        <div className="health-bar-bg">
+          <div className="health-bar" style={{width: `${(playerPokemon.currentHp / playerPokemon.maxHp) * 100}%`}}></div>
+        </div>
+        <img src={playerPokemon.sprite} alt={playerPokemon.name}/>
+        <div className="pokeballs">
+          {playerParty.map((p, i) => (
+            <span key={i}>{p.currentHp === 0 ? '⚫️' : '🔴'}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {moveAnnouncement && (
+      <div className="move-announcement">
+        <p>{moveAnnouncement}</p>
+      </div>
+    )}
 
     {phase === "player-turn" && (
       <>
@@ -231,7 +311,6 @@ const cpuAttack = () => {
         ))}
       </>
     )}
-    {phase === "cpu-turn" && <p>CPU is making their move.</p>}
   </>
   )
 }
