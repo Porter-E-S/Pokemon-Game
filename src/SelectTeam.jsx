@@ -55,8 +55,10 @@ function SelectTeam() {
   
   return (
     <>
+    <div id="selectteam">
       <h2>Select Your Team</h2>
       <button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>
+      <Link to="/battle"><button>Start Battle</button></Link>
       <div class="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
         <button class="closefave" onClick={() => setFavesOpen(false)}>Close</button>
       <Favorites open={isFavesOpen}>
@@ -72,6 +74,7 @@ function SelectTeam() {
           </div>
         ))}
       </fieldset>
+      <section>
       <ul>
         { pokemonList && Object.entries(pokemonList).map(([index, data])=>(
           <li>
@@ -80,7 +83,12 @@ function SelectTeam() {
           // add code for loading sprites
         ))}
       </ul>
-      <Link to="/battle"><button>Start Battle</button></Link>
+      <div id="infopanel">
+        <h2></h2>
+        <p>select a pokemon to view its info</p>
+      </div>
+      </section>
+      </div>
     </>
   )
 }

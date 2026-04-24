@@ -21,3 +21,20 @@ button{margin:auto;}
 .closefave{
     position: relative;
 }
+
+#selectteam{
+    height:100vh;
+    display:flex;
+    flex-direction: column;
+}
+
+ul{
+    overflow-y:scroll;
+    width:50%;
+}
+
+section{display:flex;}
+#infopanel{
+    width:50%;
+}
+
