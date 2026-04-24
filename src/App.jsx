@@ -9,12 +9,14 @@ import Battle from './Battle.jsx'
 import Error404 from './Error404.jsx'
 import Results from './Results.jsx'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import Settings from './Settings.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <BrowserRouter>
+    
     {/*<nav>
       links for testing:{" "}
         <Link to="/">Home</Link> |{" "}
@@ -28,6 +30,8 @@ function App() {
         <Route path="*" element={<Error404 />} />
         <Route path="/result" element={<Results />} />
       </Routes>
+      <div id="settingsicon">⚙️</div>
+      {/* needs to make popup toggleable <div id="settingscontainer"><Settings></Settings></div>*/}
     </BrowserRouter>
   )
 }

@@ -261,7 +261,7 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
         </span>
       )}
         <h1>{cpuPokemon.name} [{cpuPokemon.type}]</h1>
-        <p>HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
+        <p class="hptext">HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
         <div className="health-bar-bg">
           <div className="health-bar" style={{width: `${(cpuPokemon.currentHp / cpuPokemon.maxHp) * 100}%`}}></div>
         </div>
@@ -283,7 +283,7 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
           </span>
         )}
         <h1>{playerPokemon.name} [{playerPokemon.type}]</h1>
-        <p>HP: {playerPokemon.currentHp} / {playerPokemon.maxHp}</p>
+        <p class="hptext">HP: {playerPokemon.currentHp} / {playerPokemon.maxHp}</p>
         <div className="health-bar-bg">
           <div className="health-bar" style={{width: `${(playerPokemon.currentHp / playerPokemon.maxHp) * 100}%`}}></div>
         </div>
@@ -303,13 +303,13 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
     )}
 
     {phase === "player-turn" && (
-      <>
+      <div id="moves">
         {playerPokemon.moves.map((move, i) => (
           <button key={i} onClick={() => playerAttack(i)}>
             {move}
           </button>
         ))}
-      </>
+      </div>
     )}
   </>
   )

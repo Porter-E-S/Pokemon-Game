@@ -16,3 +16,37 @@ h2{
   line-height:120%;
   margin: 15px;
 }
+
+#settingsicon{
+  position:absolute;
+  right: 5px;
+  top: 20px;
+  font-size: 2em;
+}
+
+label[for="pixel"]{ font-family: "Press Start 2P", system-ui; font-size:14px;}
+label[for="sans"]{ font-family: "roboto", sans-serif; }
+label[for="serif"]{ font-family: "Times new roman", serif; }
+
+#settingscontainer{
+  position:absolute;
+  top:0;
+  left:0;
+  text-align:center;
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+}
+
+#settingscontainer>div{
+  background-color: black;
+  margin:auto;
+  display:inline-block;
+  min-width: 50%;
+  min-height:50%;
+}
+#settingscontainer fieldset{
+  text-align: left;
+  display:inline-block;
+}

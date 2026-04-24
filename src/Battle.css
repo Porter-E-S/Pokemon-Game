@@ -3,7 +3,7 @@
 .battle-arena {
     position: relative;
     width: 100%;
-    height: 60vh;
+    height: 80vh;
     background-image: url('/battle-bg.png');
     background-size: cover;
     background-position: center;
@@ -12,13 +12,13 @@
 .cpu-pokemon {
     position: absolute;
     top: 18%;
-    right: 0;
+    right: 1em;
 }
 
 .player-pokemon {
     position: absolute;
-    bottom: 0;
-    left: 0;
+    bottom: 1em;
+    left: 1em;
 }
 
 .cpu-pokemon h1,
@@ -26,6 +26,7 @@
     font-family: 'Press Start 2P', cursive;
     font-size: 0.8rem;
     color: black;
+    background-color:black;
 }
 
 .move-announcement {
@@ -50,6 +51,11 @@
     height: 100%;
     background-color: red;
     transition: width 0.3s ease;
+}
+
+.hptext {
+    background:black;
+    display:inline-block;
 }
 
 @keyframes attack {
@@ -85,4 +91,20 @@
 @keyframes float-up {
     0% {opacity: 1; transform: translateY(0);}
     100% {opacity: 0; transform: translateY(-40px);}
+}
+
+#moves{
+    margin-top:16px;
+    display:grid;
+    min-width:50%;
+    gap:5px;
+    grid-template-columns:auto auto;
+    justify-content:center;
+}
+
+#moves button{
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1rem;
+    padding:5px;
+    width:100%;
 }
