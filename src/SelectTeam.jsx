@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import Favorites from './Favorites.jsx';
+import './SelectTeam.css';
 
 function SelectTeam() {
   const types = [
@@ -48,21 +50,26 @@ function SelectTeam() {
   // filtering by type
   // filtering by name
 
-  function openfavorites(){
-    document.querySelector("Favorites").setAttribute("open", true)
-  }
+  const [isFavesOpen, setFavesOpen] = useState(false);
+
+  
   return (
     <>
-      <h1>select team</h1>
-      <button onclick={openfavorites}>favorites</button>
-      <Favorites open="false"></Favorites>
-      <input type="text" placeholder="Enter a name or ID"></input>
+      <h2>Select Your Team</h2>
+      <button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>
+      <div class="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
+        <button class="closefave" onClick={() => setFavesOpen(false)}>Close</button>
+      <Favorites open={isFavesOpen}>
+        
+        </Favorites>
+      </div>
+      <input class="searchbar" type="text" placeholder="Enter a name or ID"></input>
       <fieldset>
         {Object.entries(types).map(([index, data])=>(
-          <>
+          <div>
             <input type="checkbox" key={index} value={data.name} />
             <lable>{data.name}</lable>
-          </>
+          </div>
         ))}
       </fieldset>
       <ul>

@@ -1,0 +1,23 @@
+fieldset{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+}
+
+.searchbar{
+    font-size:1rem;
+}
+button{margin:auto;}
+
+.favecontainer{
+    position: absolute;
+    width:80%;
+    left:10%;
+    top:10%;
+    background-color: black;
+    margin:auto;
+}
+
+.closefave{
+    position: relative;
+}
