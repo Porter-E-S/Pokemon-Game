@@ -7,7 +7,7 @@ function SelectTeam() {
     {"name":"dark","id":"17"},
     {"name":"dragon","id":"16"},
     {"name":"electric","id":"13"},
-    {"name":"fairy","id":"18"},
+    //{"name":"fairy","id":"18"},
     {"name":"fighting","id":"2"},
     {"name":"fire","id":"10"},
     {"name":"flying","id":"3"},
@@ -20,7 +20,7 @@ function SelectTeam() {
     {"name":"psychic","id":"14"},
     {"name":"rock","id":"6"},
     {"name":"steel","id":"9"},
-    {"name":"stellar","id":"19"},
+    //{"name":"stellar","id":"19"},
     {"name":"unknown","id":"10001"},
     {"name":"water","id":"11"}
   ];
@@ -48,9 +48,14 @@ function SelectTeam() {
   // filtering by type
   // filtering by name
 
+  function openfavorites(){
+    document.querySelector("Favorites").setAttribute("open", true)
+  }
   return (
     <>
       <h1>select team</h1>
+      <button onclick={openfavorites}>favorites</button>
+      <Favorites open="false"></Favorites>
       <input type="text" placeholder="Enter a name or ID"></input>
       <fieldset>
         {Object.entries(types).map(([index, data])=>(
