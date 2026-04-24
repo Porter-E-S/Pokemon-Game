@@ -9,7 +9,7 @@ function Results() {
         <>
             <img src={won ? '/win.jpg' : '/lose.png'} alt={won ? 'You win!' : 'You lose!'} />
             <div className="results-buttons">
-                <Link to="/team"><button>Play again?</button></Link>
+                <Link to="/pokemon"><button>Play again?</button></Link>
                 <button>Add pokemon to favorites?</button>
             </div>
         </>
