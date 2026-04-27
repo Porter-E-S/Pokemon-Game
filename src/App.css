@@ -50,3 +50,7 @@ label[for="serif"]{ font-family: "Times new roman", serif; }
   text-align: left;
   display:inline-block;
 }
+
+.container404{
+  text-align: center;
+}

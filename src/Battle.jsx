@@ -107,7 +107,8 @@ const fetchPokemon = async (id) => {
   const attack = data.stats.find(s => s.stat.name === "attack").base_stat
   const type = data.types[0].type.name
   const moves = data.moves.slice(0, 4).map(m => m.move.name)
-  const sprite = data.sprites.front_default
+  const sprite = data.sprites.versions["generation-v"]["black-white"].animated.front_default
+  //const sprite = data.sprites.front_default
   return {
     name: name,
     type: type,
@@ -250,7 +251,7 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
 
   return (
   <>
-    <div className="battle-arena">
+    <div className="battle-arena pixelated-image">
       <div
       className={`cpu-pokemon ${cpuAnimation || ""}`}
       onAnimationEnd={() => setCpuAnimation(null)}
@@ -260,12 +261,15 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
           -{damagePopup.amount}
         </span>
       )}
-        <h1>{cpuPokemon.name} [{cpuPokemon.type}]</h1>
-        <p class="hptext">HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
+      <div class="pokemoninfo">
+        <h1 class="pokemonname">{cpuPokemon.name} [{cpuPokemon.type}]</h1>
+        
         <div className="health-bar-bg">
           <div className="health-bar" style={{width: `${(cpuPokemon.currentHp / cpuPokemon.maxHp) * 100}%`}}></div>
         </div>
-        <img src={cpuPokemon.sprite} alt={playerPokemon.name}/>
+        <p class="hptext">HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
+        </div>
+        <img class="pokemonimg" src={cpuPokemon.sprite} alt={playerPokemon.name}/>
         <div className="pokeballs">
           {cpuParty.map((p, i) => (
             <span key={i}>{p.currentHp === 0 ? '⚫️' : '🔴'}</span>
@@ -282,12 +286,15 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
             -{damagePopup.amount}
           </span>
         )}
-        <h1>{playerPokemon.name} [{playerPokemon.type}]</h1>
-        <p class="hptext">HP: {playerPokemon.currentHp} / {playerPokemon.maxHp}</p>
+        <div class="pokemoninfo">
+        <h1 class="pokemonname">{playerPokemon.name} [{playerPokemon.type}]</h1>
+        
         <div className="health-bar-bg">
           <div className="health-bar" style={{width: `${(playerPokemon.currentHp / playerPokemon.maxHp) * 100}%`}}></div>
         </div>
-        <img src={playerPokemon.sprite} alt={playerPokemon.name}/>
+        <p class="hptext">HP: {playerPokemon.currentHp} / {playerPokemon.maxHp}</p>
+        </div>
+        <img class="pokemonimg" src={playerPokemon.sprite} alt={playerPokemon.name}/>
         <div className="pokeballs">
           {playerParty.map((p, i) => (
             <span key={i}>{p.currentHp === 0 ? '⚫️' : '🔴'}</span>

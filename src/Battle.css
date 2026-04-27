@@ -4,29 +4,51 @@
     position: relative;
     width: 100%;
     height: 80vh;
-    background-image: url('/battle-bg.png');
+    background-image: url('/battle-bg-grass.png');
     background-size: cover;
-    background-position: center;
+    background-position: bottom;
 }
 
 .cpu-pokemon {
     position: absolute;
-    top: 18%;
-    right: 1em;
+    bottom: 30vh;
+    right: 30vh;
 }
 
 .player-pokemon {
     position: absolute;
-    bottom: 1em;
-    left: 1em;
+    bottom: 1vh;
+    left: 30vh;
+}
+
+.player-pokemon img{
+    transform: scaleX(-1);
+}
+
+.pokemonimg{
+    height:30vh;
+}
+.pokemoninfo{
+    background:#F8F8D8;
+    border: 5px solid #506860;
+    outline: 5px solid #203800;
+    padding: 5px;
+}
+.cpu-pokemon .pokemoninfo{
+    position:fixed;
+    right: 80vh;
+    top: 10vh;
+}
+.player-pokemon .pokemoninfo{
+    position:absolute;
+    top: -15vh;
 }
 
 .cpu-pokemon h1,
 .player-pokemon h1 {
     font-family: 'Press Start 2P', cursive;
     font-size: 0.8rem;
-    color: black;
-    background-color:black;
+    color: #404040;
 }
 
 .move-announcement {
@@ -39,6 +61,11 @@
     line-height: 1.8;
 }
 
+.pokemonname{
+    margin: 0px;
+    white-space: nowrap;
+}
+
 .health-bar-bg {
     width: 150px;
     height: 10px;
@@ -49,13 +76,15 @@
 
 .health-bar {
     height: 100%;
-    background-color: red;
+    background-color: #70F8A8;
     transition: width 0.3s ease;
+    
 }
 
 .hptext {
-    background:black;
     display:inline-block;
+    color: #404040;
+    float:right;
 }
 
 @keyframes attack {
@@ -96,9 +125,9 @@
 #moves{
     margin-top:16px;
     display:grid;
-    min-width:50%;
+    width:100%;
     gap:5px;
-    grid-template-columns:auto auto;
+    grid-template-columns:repeat(2, minmax(0, 0.35fr));;
     justify-content:center;
 }
 

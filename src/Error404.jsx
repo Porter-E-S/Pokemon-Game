@@ -12,8 +12,10 @@ function Error404() {
 }
   return (
     <>
-    <h1>Error 404:<br />page not found</h1>
-    <Link to="/" style={{color:"white"}}><button style={btnstyle}>Return to start screen</button></Link>
+    <div class="container404">
+      <h1>Error 404:<br />page not found</h1>
+      <Link to="/" style={{color:"white"}}><button style={btnstyle}>Return to start screen</button></Link>
+    </div>
     </>
   )
 }
