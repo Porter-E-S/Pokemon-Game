@@ -14,3 +14,8 @@
     padding: 16px 32px;
     cursor: pointer;
 }
+
+.resultcontainer{
+    display: flex;
+    flex-direction: column;
+}
