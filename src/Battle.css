@@ -82,7 +82,7 @@
 }
 
 .hptext {
-    display:inline-block;
+    display:block;
     color: #404040;
     float:right;
 }

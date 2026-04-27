@@ -1,3 +1,8 @@
+:root{
+    background: #206860;
+    height: 100vh;
+    color: white;
+}
 fieldset{
     display:flex;
     gap:16px;
@@ -26,14 +31,45 @@ button{margin:auto;}
     height:100vh;
     display:flex;
     flex-direction: column;
+    background: black;
+    background: linear-gradient(
+    to bottom, 
+    #48A8A0 50%, 
+    #388888 50%
+  );
+  background-size: 100% 4px;
+  margin: 1em 0px;
 }
 
 ul{
-    overflow-y:scroll;
-    width:50%;
+    /*overflow-y:scroll;
+    width:50%;*/
+    padding: 0px;
+    margin: 0px;
 }
 
-section{display:flex;}
+#main{
+    display:flex;
+    overflow: hidden;
+}
+
+#main >div{
+    flex:1;
+    border: 3px solid;
+    border-color: #40C8F8 #006090 #006090 #40C8F8;
+}
+
+#main > div::-webkit-scrollbar {
+  width: 1em;
+}
+#main > div::-webkit-scrollbar-thumb{
+  border: 2px solid #607078;
+  background:#F8F8F8;
+}
+#main > div::-webkit-scrollbar-track {
+  background: #206860;
+}
+
 #infopanel{
     width:50%;
 }
@@ -41,8 +77,30 @@ section{display:flex;}
 li::marker{
     content:none;
 }
-
+li{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+}
 li span{
     vertical-align:middle;
 }
+li .pokemonname{
+    display: inline-block;
+}
+li .buttons{
+    display: inline-block;
+}
+
+.pokemonlist{
+    overflow-y:scroll;
+    padding-right:1em;
+}
+
+#buttons button{
+    background-color: #7058B0;
+    border: 2px solid #484860;
+    border-radius: 2px;
+}
+
 

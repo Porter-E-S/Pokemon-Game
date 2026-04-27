@@ -29,7 +29,7 @@ function SelectTeam() {
 
   const [pokemonList, set_pokemonList] = useState();
   useEffect(() => {
-    fetch('https://pokeapi.co/api/v2/pokemon?limit=10&offset=0')
+    fetch('https://pokeapi.co/api/v2/pokemon?limit=151&offset=0')
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -74,16 +74,23 @@ function SelectTeam() {
           </div>
         ))}
       </fieldset>
-      <section>
+      <section id="main">
+        <div class="pokemonlist">
       <ul>
         { pokemonList && Object.entries(pokemonList).map(([index, data])=>(
           <li>
             <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+(index*1+1)+".png"}/>
-            <span>{data.name}</span>
+            <p class="pokemonname">{data.name}</p>
+            <div id="buttons">
+              <button>add to favorites</button><br></br>
+              <button>add to team</button>
+            </div>
             </li>
           // add code for loading sprites
         ))}
       </ul>
+      </div>
+      <div class="pokemonlist"><Favorites></Favorites></div>
       <div id="infopanel">
         <h2></h2>
         <p>select a pokemon to view its info</p>
