@@ -78,8 +78,9 @@ function SelectTeam() {
       <ul>
         { pokemonList && Object.entries(pokemonList).map(([index, data])=>(
           <li>
-            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png"/>
-            {data.name}</li>
+            <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+(index*1+1)+".png"}/>
+            <span>{data.name}</span>
+            </li>
           // add code for loading sprites
         ))}
       </ul>
