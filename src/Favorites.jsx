@@ -14,9 +14,9 @@ const temp = {
         { Object.entries(temp).map(([index, data])=>(
           <li>
             <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+index+".png"}/>
-            <p class="pokemonname">{data.name}</p>
+            <p class="pokemonname">{data}</p>
             <div id="buttons">
-              <button>remove from favorites</button><br></br>
+              <button>remove ⭐</button><br></br>
               <button>add to team</button>
             </div>
             </li>

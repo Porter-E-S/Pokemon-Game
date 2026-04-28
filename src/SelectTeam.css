@@ -2,11 +2,47 @@
     background: #206860;
     height: 100vh;
     color: white;
+    image-rendering: pixelated;
 }
-fieldset{
+
+button a{
+    text-decoration: none;
+    color: white;
+}
+
+/* type filters */
+.typefilters{
     display:flex;
     gap:16px;
     flex-wrap:wrap;
+    padding: 8px;
+}
+
+.typefilters span{
+    background-image: url("/rubysapphire type icons.png");
+    width:64px;
+    height: 28px;
+    background-size:256px;
+    display:inline-block;
+    color: transparent;
+    cursor: pointer;
+}
+
+.typefilters input[type="checkbox"]{
+    cursor: pointer;
+    height: 24px;
+    width: 24px;
+    margin: 2px;
+}
+.typefilters input:checked::before{
+
+}
+.typefilters div{
+    flex: 1;
+    min-width: 120px;
+}
+.typefilters label{
+    
 }
 
 .searchbar{
@@ -51,24 +87,43 @@ ul{
 #main{
     display:flex;
     overflow: hidden;
+    gap: 4px;
+    padding: 4px;
 }
 
 #main >div{
     flex:1;
-    border: 3px solid;
-    border-color: #40C8F8 #006090 #006090 #40C8F8;
+    /*border: 3px solid;
+    border-color: #40C8F8 #006090 #006090 #40C8F8;*/
+    border: 9px solid;
+    border-image: url('/team menu frame 1.png');
+    border-image-slice: 3;
 }
 
+
+/* scrollbar */
 #main > div::-webkit-scrollbar {
-  width: 1em;
+  width: 20px;
+  position:relative;
+  right:-3px;
 }
 #main > div::-webkit-scrollbar-thumb{
-  border: 2px solid #607078;
-  background:#F8F8F8;
+  background-color: #08F098;
+  border: 10px solid;
+  border-image: url('/scrollbar thumb.png');
+  border-image-slice: 2 2 3 2;
+  box-sizing: content-box;
+  background-size: contain;
+  image-rendering: pixelated;
+  height: 24px;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 #main > div::-webkit-scrollbar-track {
-  background: #206860;
+  background: #2878B0;
 }
+
+
 
 #infopanel{
     width:50%;

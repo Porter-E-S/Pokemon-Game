@@ -5,26 +5,26 @@ import './SelectTeam.css';
 
 function SelectTeam() {
   const types = [
-    {"name":"bug","id":"7"},
-    {"name":"dark","id":"17"},
-    {"name":"dragon","id":"16"},
-    {"name":"electric","id":"13"},
+    {"name":"bug","id":"7", offset:[3,2]},
+    {"name":"dark","id":"17", offset:[2,5]},
+    {"name":"dragon","id":"16", offset:[1,5]},
+    {"name":"electric","id":"13", offset:[2,4]},
     //{"name":"fairy","id":"18"},
-    {"name":"fighting","id":"2"},
-    {"name":"fire","id":"10"},
-    {"name":"flying","id":"3"},
-    {"name":"ghost","id":"8"},
-    {"name":"grass","id":"12"},
-    {"name":"ground","id":"5"},
-    {"name":"ice","id":"15"},
-    {"name":"normal","id":"1"},
-    {"name":"poison","id":"4"},
-    {"name":"psychic","id":"14"},
-    {"name":"rock","id":"6"},
-    {"name":"steel","id":"9"},
+    {"name":"fighting","id":"2", offset:[2,1]},
+    {"name":"fire","id":"10", offset:[3,3]},
+    {"name":"flying","id":"3", offset:[3,1]},
+    {"name":"ghost","id":"8", offset:[4,2]},
+    {"name":"grass","id":"12", offset:[1,4]},
+    {"name":"ground","id":"5", offset:[1,2]},
+    {"name":"ice","id":"15", offset:[4,4]},
+    {"name":"normal","id":"1", offset:[1,1]},
+    {"name":"poison","id":"4", offset:[4,1]},
+    {"name":"psychic","id":"14", offset:[3,4]},
+    {"name":"rock","id":"6", offset:[2,2]},
+    {"name":"steel","id":"9", offset:[1,3]},
     //{"name":"stellar","id":"19"},
-    {"name":"unknown","id":"10001"},
-    {"name":"water","id":"11"}
+    //{"name":"unknown","id":"10001", offset:[2,3]},
+    {"name":"water","id":"11", offset:[4,3]}
   ];
 
   const [pokemonList, set_pokemonList] = useState();
@@ -57,8 +57,8 @@ function SelectTeam() {
     <>
     <div id="selectteam">
       <h2>Select Your Team</h2>
-      <button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>
-      <Link to="/battle"><button>Start Battle</button></Link>
+      {/*<button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>*/}
+      <button><Link to="/battle">Start Battle</Link></button>
       <div class="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
         <button class="closefave" onClick={() => setFavesOpen(false)}>Close</button>
       <Favorites open={isFavesOpen}>
@@ -66,14 +66,17 @@ function SelectTeam() {
         </Favorites>
       </div>
       <input class="searchbar" type="text" placeholder="Enter a name or ID"></input>
-      <fieldset>
+      <div class="typefilters">
         {Object.entries(types).map(([index, data])=>(
           <div>
-            <input type="checkbox" key={index} value={data.name} />
-            <lable>{data.name}</lable>
+            <label aria-label={data.name}>
+              <input type="checkbox" key={index} value={data.name} name={data.name} />
+              <span style={{backgroundPosition:`left ${(data.offset[0]-1)*-64}px top ${(data.offset[1]-1)*-32-2}px`}}> 
+              </span>
+            </label>
           </div>
         ))}
-      </fieldset>
+      </div>
       <section id="main">
         <div class="pokemonlist">
       <ul>
