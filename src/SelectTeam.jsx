@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import Favorites from './Favorites.jsx';
 import './SelectTeam.css';
+import InfoPanel from './InfoPanel.jsx';
 
 function SelectTeam() {
   const types = [
@@ -37,9 +38,9 @@ function SelectTeam() {
         return response.json();
       })
       .then(data => {
-        console.log(data.results)
+        //console.log(data.results)
         set_pokemonList(data.results);
-        console.log("e", pokemonList)
+        //console.log("e", pokemonList)
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
@@ -51,14 +52,42 @@ function SelectTeam() {
   // filtering by name
 
   const [isFavesOpen, setFavesOpen] = useState(false);
-
+  const [panelData, setPanelData] = useState([{
+    forms:[{name:"???"}],
+    id:"???",
+    sprites:{front_default:null},
+    //stats:{[{name:"hp"}]},
+    types:[{type:{name:"unknown"}}]
+}]
+  );
+  function showinfo(id){
+    fetch('https://pokeapi.co/api/v2/pokemon/'+id)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        setPanelData([data]);
+        //console.log(panelData)
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+  }
   
   return (
     <>
     <div id="selectteam">
-      <h2>Select Your Team</h2>
-      {/*<button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>*/}
-      <button><Link to="/battle">Start Battle</Link></button>
+      <div id="header">
+        <h2>Select Your Team</h2>
+        {/*<button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>*/}
+        <div class="teamcontainer">
+          <div>?</div><div>?</div><div>?</div>
+        </div>
+        <Link to="/battle"><button>Start Battle</button></Link>
+      </div>
       <div class="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
         <button class="closefave" onClick={() => setFavesOpen(false)}>Close</button>
       <Favorites open={isFavesOpen}>
@@ -81,11 +110,11 @@ function SelectTeam() {
         <div class="pokemonlist">
       <ul>
         { pokemonList && Object.entries(pokemonList).map(([index, data])=>(
-          <li>
+          <li onClick={()=>showinfo(index*1+1)}>
             <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+(index*1+1)+".png"}/>
             <p class="pokemonname">{data.name}</p>
             <div id="buttons">
-              <button>add to favorites</button><br></br>
+              <button>add to <span class="star"></span></button><br></br>
               <button>add to team</button>
             </div>
             </li>
@@ -94,10 +123,7 @@ function SelectTeam() {
       </ul>
       </div>
       <div class="pokemonlist"><Favorites></Favorites></div>
-      <div id="infopanel">
-        <h2></h2>
-        <p>select a pokemon to view its info</p>
-      </div>
+      <InfoPanel data={panelData}></InfoPanel>
       </section>
       </div>
     </>

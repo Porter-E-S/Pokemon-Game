@@ -30,8 +30,8 @@ function App() {
         <Route path="*" element={<Error404 />} />
         <Route path="/result" element={<Results />} />
       </Routes>
-      <div id="settingsicon">⚙️</div>
-      {/* needs to make popup toggleable <div id="settingscontainer"><Settings></Settings></div>*/}
+      {/*<div id="settingsicon">⚙️</div>
+       needs to make popup toggleable <div id="settingscontainer"><Settings></Settings></div>*/}
     </BrowserRouter>
   )
 }
