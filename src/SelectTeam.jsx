@@ -44,7 +44,8 @@ function SelectTeam() {
               .then( r => r.json())
               .then(p => ({
                 name: pokemon.name,
-                type: p.types[0].type.name
+                type: p.types[0].type.name,
+                id: index + 1
               }))
         )
       )
@@ -118,7 +119,7 @@ function SelectTeam() {
       <ul>
         { filteredList && filteredList.map((data, index)=>(
           <li>
-            <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+(index*1+1)+".png"}/>
+            <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+ data. id +".png"}/>
             <p class="pokemonname">{data.name}</p>
             <div id="buttons">
               <button>add to favorites</button><br></br>
