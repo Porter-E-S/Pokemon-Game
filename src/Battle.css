@@ -12,13 +12,13 @@
 .cpu-pokemon {
     position: absolute;
     bottom: 30vh;
-    right: 30vh;
+    right: 12vh;
 }
 
 .player-pokemon {
     position: absolute;
     bottom: 1vh;
-    left: 30vh;
+    left: 15vh;
 }
 
 .player-pokemon img{
@@ -36,7 +36,7 @@
 }
 .cpu-pokemon .pokemoninfo{
     position:fixed;
-    right: 80vh;
+    right: 55vh;
     top: 10vh;
 }
 .player-pokemon .pokemoninfo{
@@ -57,8 +57,10 @@
     padding: 16px 20px;
     margin: 10px 0;
     font-family: 'Press Start 2P', cursive;
-    font-size: 0.75rem;
+    font-size: 1rem;
     line-height: 1.8;
+    color: black;
+    text-align: center;
 }
 
 .pokemonname{

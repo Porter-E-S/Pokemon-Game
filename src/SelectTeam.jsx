@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import Favorites from './Favorites.jsx';
 import './SelectTeam.css';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 function SelectTeam() {
   const types = [
@@ -36,11 +37,19 @@ function SelectTeam() {
         }
         return response.json();
       })
-      .then(data => {
-        console.log(data.results)
-        set_pokemonList(data.results);
-        console.log("e", pokemonList)
-      })
+      .then(async data => {
+        const detailed = await Promise.all(
+          data.results.map((pokemon, index) =>
+            fetch(`https://pokeapi.co/api/v2/pokemon/${index + 1}`)
+              .then( r => r.json())
+              .then(p => ({
+                name: pokemon.name,
+                type: p.types[0].type.name
+              }))
+        )
+      )
+      set_pokemonList(detailed)
+    })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
       });
@@ -51,26 +60,53 @@ function SelectTeam() {
   // filtering by name
 
   const [isFavesOpen, setFavesOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+  const [typeFilter, setTypeFilter] = useState([])
+  const [playerTeam, setPlayerTeam] = useState([])
+  const filteredList = pokemonList ? pokemonList.filter((pokemon, index) => {
+    const id = index + 1
+    const matchesSearch = pokemon.name.includes(search) || id.toString().includes(search)
+    const matchesType = typeFilter.length === 0 || typeFilter.includes(pokemon.type)
+    return matchesSearch && matchesType
+  }) : []
+  const typeChange = (typeName) => {
+    if (typeFilter.includes(typeName)) {
+      setTypeFilter(typeFilter.filter(t => t !== typeName))
+    } else {
+      setTypeFilter([...typeFilter, typeName])
+    }
+  }
+  const addToTeam = (pokemon) => {
+    if (playerTeam.length >= 3) {
+      return
+    }  
+    if (playerTeam.includes(pokemon)) {
+      return
+    }
+    setPlayerTeam([...playerTeam, pokemon])
+  }
 
-  
+
   return (
     <>
     <div id="selectteam">
       <h2>Select Your Team</h2>
       {/*<button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>*/}
-      <button><Link to="/battle">Start Battle</Link></button>
+      <p>Team: {playerTeam.map(p => p.name).join(', ')}</p>
+      <button onClick={() => navigate('/battle', { state: { team: playerTeam } })}>Start Battle</button>
       <div class="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
         <button class="closefave" onClick={() => setFavesOpen(false)}>Close</button>
       <Favorites open={isFavesOpen}>
         
         </Favorites>
       </div>
-      <input class="searchbar" type="text" placeholder="Enter a name or ID"></input>
+      <input class="searchbar" type="text" placeholder="Enter a name or ID" value={search} onChange={e => setSearch(e.target.value)}></input>
       <div class="typefilters">
         {Object.entries(types).map(([index, data])=>(
           <div>
             <label aria-label={data.name}>
-              <input type="checkbox" key={index} value={data.name} name={data.name} />
+              <input type="checkbox" key={index} value={data.name} name={data.name} onChange={() => typeChange(data.name)}/>
               <span style={{backgroundPosition:`left ${(data.offset[0]-1)*-64}px top ${(data.offset[1]-1)*-32-2}px`}}> 
               </span>
             </label>
@@ -80,13 +116,13 @@ function SelectTeam() {
       <section id="main">
         <div class="pokemonlist">
       <ul>
-        { pokemonList && Object.entries(pokemonList).map(([index, data])=>(
+        { filteredList && filteredList.map((data, index)=>(
           <li>
             <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+(index*1+1)+".png"}/>
             <p class="pokemonname">{data.name}</p>
             <div id="buttons">
               <button>add to favorites</button><br></br>
-              <button>add to team</button>
+              <button onClick={() => addToTeam(data)}>add to team</button>
             </div>
             </li>
           // add code for loading sprites

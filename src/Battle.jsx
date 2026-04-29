@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import {useState, useEffect} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, useLocation} from 'react-router-dom'
 import './Battle.css'
 
 const TYPE_MATCHUPS = {
@@ -138,6 +138,7 @@ function Battle() {
   const [log, setLog] = useState([])
   const [phase, setPhase] = useState("loading")
   const navigate = useNavigate()
+  const location = useLocation()
   const [playerAnimation, setPlayerAnimation] = useState(null)
   const [cpuAnimation, setCpuAnimation] = useState(null)
   const [damagePopup, setDamagePopup] = useState(null)
@@ -146,11 +147,18 @@ function Battle() {
   useEffect(() => {
     const loadTeams = async () => {
       const cpuIds = getRandomIds(3)
-      const playerIds = getRandomIds(3)
-      const playerTeam = await Promise.all(playerIds.map(id => fetchPokemon(id)))
       const cpuTeam = await Promise.all(cpuIds.map(id => fetchPokemon(id)))
-      setPlayerParty(playerTeam)
       setCpuParty(cpuTeam)
+
+      const passedTeam = location.state?.team
+      if (passedTeam && passedTeam.length > 0) {
+        const fullTeam = await Promise.all(passedTeam.map(p => fetchPokemon(p.name)))
+        setPlayerParty(fullTeam)
+      } else {
+        const playerIds = getRandomIds(3)
+        const playerTeam = await Promise.all(playerIds.map(id => fetchPokemon(id)))
+        setPlayerParty(playerTeam)
+      }
       setPhase("player-turn")
     }
       loadTeams()
@@ -261,15 +269,14 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
           -{damagePopup.amount}
         </span>
       )}
-      <div class="pokemoninfo">
-        <h1 class="pokemonname">{cpuPokemon.name} [{cpuPokemon.type}]</h1>
-        
+      <div className="pokemoninfo">
+        <h1 className="pokemonname">{cpuPokemon.name} [{cpuPokemon.type}]</h1>
         <div className="health-bar-bg">
           <div className="health-bar" style={{width: `${(cpuPokemon.currentHp / cpuPokemon.maxHp) * 100}%`}}></div>
         </div>
-        <p class="hptext">HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
+        <p className="hptext">HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
         </div>
-        <img class="pokemonimg" src={cpuPokemon.sprite} alt={playerPokemon.name}/>
+        <img className="pokemonimg" src={cpuPokemon.sprite} alt={cpuPokemon.name}/>
         <div className="pokeballs">
           {cpuParty.map((p, i) => (
             <span key={i}>{p.currentHp === 0 ? '⚫️' : '🔴'}</span>
