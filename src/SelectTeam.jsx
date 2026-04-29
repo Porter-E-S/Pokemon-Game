@@ -106,7 +106,7 @@ function SelectTeam() {
         <div class="teamcontainer">
           {playerTeam.map((p)=>(
           <div><img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+p.id+".png"}></img>
-          <br></br><p class="pokemonname">{p.name}</p>
+          <p class="pokemonname">{p.name}</p>
           </div>
           ))}
         </div>

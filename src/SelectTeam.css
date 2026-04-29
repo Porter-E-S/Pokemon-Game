@@ -36,9 +36,13 @@
 }
 .teamcontainer{
     display:inline-flex;
+    font-family: sans-serif;
 }
 .teamcontainer div{
     border: 4px solid #484860;
+}
+.teamcontainer img{
+    height: 50px;
 }
 #header button{
     font: inherit;
