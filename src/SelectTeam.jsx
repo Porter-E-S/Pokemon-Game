@@ -62,6 +62,7 @@ function SelectTeam() {
 
   const [isFavesOpen, setFavesOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
   const navigate = useNavigate();
   const [typeFilter, setTypeFilter] = useState([])
   const [playerTeam, setPlayerTeam] = useState([])
@@ -81,11 +82,17 @@ function SelectTeam() {
   const addToTeam = (pokemon) => {
     if (playerTeam.length >= 3) {
       return
-    }  
+    }
     if (playerTeam.includes(pokemon)) {
       return
     }
     setPlayerTeam([...playerTeam, pokemon])
+  }
+
+  const selectPokemon = (id) => {
+    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
+      .then(r => r.json())
+      .then(data => setSelectedPokemon(data));
   }
 
 
@@ -123,7 +130,8 @@ function SelectTeam() {
             <p class="pokemonname">{data.name}</p>
             <div id="buttons">
               <button>add to favorites</button><br></br>
-              <button onClick={() => addToTeam(data)}>add to team</button>
+              <button onClick={() => addToTeam(data)}>add to team</button><br></br>
+              <button onClick={() => selectPokemon(data.id)}>view info</button>
             </div>
             </li>
           // add code for loading sprites
@@ -132,8 +140,24 @@ function SelectTeam() {
       </div>
       <div class="pokemonlist"><Favorites></Favorites></div>
       <div id="infopanel">
-        <h2></h2>
-        <p>select a pokemon to view its info</p>
+        {selectedPokemon ? (
+          <>
+            <h2>{selectedPokemon.name}</h2>
+            <img src={selectedPokemon.sprites.front_default} />
+            <p>Type: {selectedPokemon.types.map(t => t.type.name).join(', ')}</p>
+            <p>Height: {selectedPokemon.height / 10}m</p>
+            <p>Weight: {selectedPokemon.weight / 10}kg</p>
+            <p>Abilities: {selectedPokemon.abilities.map(a => a.ability.name).join(', ')}</p>
+            <p>Base Stats:</p>
+            <ul>
+              {selectedPokemon.stats.map(s => (
+                <li key={s.stat.name}>{s.stat.name}: {s.base_stat}</li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p>select a pokemon to view its info</p>
+        )}
       </div>
       </section>
       </div>
