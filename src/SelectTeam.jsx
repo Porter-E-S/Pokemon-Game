@@ -87,6 +87,7 @@ function SelectTeam() {
       return
     }
     setPlayerTeam([...playerTeam, pokemon])
+    console.log(playerTeam)
   }
 
   const selectPokemon = (id) => {
@@ -99,9 +100,19 @@ function SelectTeam() {
   return (
     <>
     <div id="selectteam">
-      <h2>Select Your Team</h2>
-      {/*<button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>*/}
-      <p>Team: {playerTeam.map(p => p.name).join(', ')}</p>
+      <div id="header">
+        <h2>Select Your Team:</h2>
+        {/*<button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>*/}
+        <div class="teamcontainer">
+          {playerTeam.map((p)=>(
+          <div><img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+p.id+".png"}></img>
+          <br></br><p class="pokemonname">{p.name}</p>
+          </div>
+          ))}
+        </div>
+        <Link to="/battle"><button>Start Battle</button></Link>
+      </div>
+      <p>Team: </p>
       <button onClick={() => navigate('/battle', { state: { team: playerTeam } })}>Start Battle</button>
       <div class="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
         <button class="closefave" onClick={() => setFavesOpen(false)}>Close</button>
@@ -125,13 +136,12 @@ function SelectTeam() {
         <div class="pokemonlist">
       <ul>
         { filteredList && filteredList.map((data, index)=>(
-          <li>
+          <li onClick={() => selectPokemon(data.id)}>
             <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+ data. id +".png"}/>
             <p class="pokemonname">{data.name}</p>
             <div id="buttons">
               <button>add to favorites</button><br></br>
               <button onClick={() => addToTeam(data)}>add to team</button><br></br>
-              <button onClick={() => selectPokemon(data.id)}>view info</button>
             </div>
             </li>
           // add code for loading sprites
