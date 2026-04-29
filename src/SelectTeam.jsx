@@ -110,10 +110,8 @@ function SelectTeam() {
           </div>
           ))}
         </div>
-        <Link to="/battle"><button>Start Battle</button></Link>
+        <Link to="/battle"><button onClick={() => navigate('/battle', { state: { team: playerTeam } })}>Start Battle</button></Link>
       </div>
-      <p>Team: </p>
-      <button onClick={() => navigate('/battle', { state: { team: playerTeam } })}>Start Battle</button>
       <div class="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
         <button class="closefave" onClick={() => setFavesOpen(false)}>Close</button>
       <Favorites open={isFavesOpen}>
