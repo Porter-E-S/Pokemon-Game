@@ -37,7 +37,16 @@ function SelectTeam() {
         }
         return response.json();
       })
-      .then(async data => {
+      .then(data => {
+        data.results.forEach((e)=>{
+          e.id = e.url.replace("https://pokeapi.co/api/v2/pokemon/","").replace("/","")
+        })
+        set_pokemonList(data.results);
+      })
+      .catch(error => {
+        console.error('error fetching pokemon list', error);
+      });
+      /*.then(async data => {
         const detailed = await Promise.all(
           data.results.map((pokemon, index) =>
             fetch(`https://pokeapi.co/api/v2/pokemon/${index + 1}`)
@@ -50,10 +59,7 @@ function SelectTeam() {
         )
       )
       set_pokemonList(detailed)
-    })
-      .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-      });
+    })*/
   }, []);
 
   // add code for loading more pokemon when the user scrolls down
@@ -64,29 +70,45 @@ function SelectTeam() {
   const [search, setSearch] = useState("");
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const navigate = useNavigate();
-  const [typeFilter, setTypeFilter] = useState([])
+  const [typeFilter, setTypeFilter] = useState({})
   const [playerTeam, setPlayerTeam] = useState([])
-  const filteredList = pokemonList ? pokemonList.filter((pokemon, index) => {
-    const id = index + 1
-    const matchesSearch = pokemon.name.includes(search) || id.toString().includes(search)
-    const matchesType = typeFilter.length === 0 || typeFilter.includes(pokemon.type)
-    return matchesSearch && matchesType
+  const filteredList = (Object.keys(typeFilter).length === 0) ? pokemonList : pokemonList ? pokemonList.filter((pokemon, index) => {
+    const matchesSearch = pokemon.name.includes(search) || pokemon.id.toString().includes(search)
+    var matchesType = []; // to match more than 1 type
+    Object.values(typeFilter).forEach((data)=>{
+      data.forEach((p)=>{
+        if (p.pokemon.name == pokemon.name) {matchesType.push(true)}
+      })
+    })
+    console.log(matchesType)
+    console.log("len 0", Object.keys(typeFilter).length === 0)
+    return matchesSearch && (matchesType.length == Object.keys(typeFilter).length)
   }) : []
+
   const typeChange = (typeName) => {
-    if (typeFilter.includes(typeName)) {
-      setTypeFilter(typeFilter.filter(t => t !== typeName))
+    
+    if (Object.keys(typeFilter).includes(typeName)) {
+      //setTypeFilter(typeFilter.filter(t => t !== typeName))
     } else {
-      setTypeFilter([...typeFilter, typeName])
+      var id = types.find(t => t.name == typeName).id
+      fetch(`https://pokeapi.co/api/v2/type/${id}`)
+      .then(r => r.json())
+      .then(data => setTypeFilter({...typeFilter, [typeName]:data.pokemon}));
+      //setTypeFilter({...typeFilter, types: [...typeFilter.types, typeName]})
+      console.log(typeFilter)
     }
   }
+
   const addToTeam = (pokemon) => {
-    if (playerTeam.length >= 3) {
+    if (playerTeam.includes(pokemon)) { //remove pokemon
+      playerTeam.splice(playerTeam.indexOf(pokemon), 1)
+    }
+    else if (playerTeam.length >= 3) {
       return
     }
-    if (playerTeam.includes(pokemon)) {
-      return
+    else{
+      setPlayerTeam([...playerTeam, pokemon])
     }
-    setPlayerTeam([...playerTeam, pokemon])
     console.log(playerTeam)
   }
 
@@ -103,21 +125,25 @@ function SelectTeam() {
       <div id="header">
         <h2>Select Your Team:</h2>
         {/*<button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>*/}
-        <div class="teamcontainer">
+        <div className="teamcontainer">
           {playerTeam.map((p)=>(
-          <div><img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+p.id+".png"}></img>
+          <div class="teammember">
+            <div class="iconcontainer">
+              <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+p.id+".png"}></img>
+            </div>
           <p class="pokemonname">{p.name}</p>
           </div>
           ))}
         </div>
         <Link to="/battle"><button onClick={() => navigate('/battle', { state: { team: playerTeam } })}>Start Battle</button></Link>
       </div>
+
       <div class="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
-        <button class="closefave" onClick={() => setFavesOpen(false)}>Close</button>
-      <Favorites open={isFavesOpen}>
-        
-        </Favorites>
+        <button className="closefave" onClick={() => setFavesOpen(false)}>Close</button>
+      <Favorites open={isFavesOpen}></Favorites>
       </div>
+
+      {/* SEARCH */}
       <input class="searchbar" type="text" placeholder="Enter a name or ID" value={search} onChange={e => setSearch(e.target.value)}></input>
       <div class="typefilters">
         {Object.entries(types).map(([index, data])=>(
@@ -130,19 +156,21 @@ function SelectTeam() {
           </div>
         ))}
       </div>
+
       <section id="main">
         <div class="pokemonlist">
       <ul>
         { filteredList && filteredList.map((data, index)=>(
           <li onClick={() => selectPokemon(data.id)}>
-            <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+ data. id +".png"}/>
-            <p class="pokemonname">{data.name}</p>
+            <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+ data.id +".png"}/>
+            <p class="pokemonname">{data.id+". "+data.name}</p>
             <div id="buttons">
-              <button>add to favorites</button><br></br>
-              <button onClick={() => addToTeam(data)}>add to team</button><br></br>
+              <button class="fave">add to</button><br></br>
+                <button onClick={() => addToTeam(data)}>
+                  {playerTeam.includes(data) ? "remove from" : "add to" } team
+                </button>
             </div>
             </li>
-          // add code for loading sprites
         ))}
       </ul>
       </div>

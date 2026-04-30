@@ -5,13 +5,6 @@
     image-rendering: pixelated;
 }
 
-.star{
-    background-image: url('star.png');
-    width: 16px;
-    height: 16px;
-    display: inline-block;
-}
-
 #selectteam{
     height:100vh;
     display:flex;
@@ -34,16 +27,28 @@
     line-height:120%;
   margin: 15px;
 }
+
+/* team container */
 .teamcontainer{
     display:inline-flex;
     font-family: sans-serif;
 }
-.teamcontainer div{
+.teamcontainer .teammember{
     border: 4px solid #484860;
+    width: 100px;
 }
 .teamcontainer img{
     height: 50px;
+    /*background-image: url('./pokeball bg.png');
+    background-position-x: center;
+    background-size: 50px;
+    background-repeat: no-repeat;*/
 }
+.teamcontainer .iconcontainer{
+    
+}
+
+/* start button */
 #header button{
     font: inherit;
     float:right;
@@ -52,12 +57,17 @@
     font-size: 24px;
     background: #3890D8;
     text-shadow: 3px 3px 0px #737373;
-    border: 4px solid #484860;
+    border: 8px solid;
+    border-image: url('./team menu frame 1.png');
+    border-image-slice: 3;
     color: #F8F8F8;
+    border-radius: 10px;
 }
 #header button:hover{
-    border: 4px solid #F87030;
-    background: #78D0E8;
+    border: 8px solid;
+    border-image: url('./start button hover.png');
+    border-image-slice: 3;
+    background-color: #78D0E8;
 }
 
 button a{
@@ -145,7 +155,7 @@ ul{
     display:flex;
     overflow: hidden;
     gap: 4px;
-    padding: 4px;
+    padding: 0px 4px 4px 4px;
 }
 
 #main >div{
@@ -160,15 +170,17 @@ ul{
 
 /* scrollbar */
 #main > div::-webkit-scrollbar {
-  width: 20px;
+  width: 16px;
   position:relative;
   right:-3px;
 }
 #main > div::-webkit-scrollbar-thumb{
-  background-color: #08F098;
-  border: 10px solid;
+  background-color: #F8F8F8;
+  /*border: 10px solid;
   border-image: url('/scrollbar thumb.png');
-  border-image-slice: 2 2 3 2;
+  border-image-slice: 2 2 3 2;*/
+  border: 3px solid #2878B0;
+  border-right-width: 0px;
   box-sizing: content-box;
   background-size: contain;
   image-rendering: pixelated;
@@ -203,13 +215,32 @@ li .pokemonname{
 li .buttons{
     display: inline-block;
 }
-
-
-
-#buttons button{
-    background-color: #7058B0;
-    border: 2px solid #484860;
-    border-radius: 2px;
+li img{
+    height: 50px;
 }
 
 
+/* purple buttons */
+#buttons button{
+    border: 8px solid;
+    border-image: url('./purple button.png');
+    border-image-slice: 5 fill;
+    line-height: 8px;
+    background: none;
+    padding: 0px 4px;
+    position: relative;
+}
+
+#buttons button.fave{
+    padding: 0px 20px 0px 4px;
+}
+
+#buttons button.fave::after{
+    padding: 0px 4px;
+    content: url('star.png');
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: absolute;
+    top: -4px;
+}

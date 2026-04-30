@@ -13,10 +13,10 @@ const temp = {
     <ul>
         { Object.entries(temp).map(([index, data])=>(
           <li>
-            <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+index+".png"}/>
-            <p class="pokemonname">{data}</p>
+            <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+index+".png"}/>
+            <p className="pokemonname">{data}</p>
             <div id="buttons">
-              <button>remove <span class="star"></span></button><br></br>
+              <button class="fave">remove</button><br></br>
               <button>add to team</button>
             </div>
             </li>
