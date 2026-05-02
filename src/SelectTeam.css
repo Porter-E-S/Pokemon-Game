@@ -1,5 +1,4 @@
 :root{
-    
     height: 100vh;
     color: white;
     image-rendering: pixelated;
@@ -145,8 +144,6 @@ button{margin:auto;}
 
 
 ul{
-    /*overflow-y:scroll;
-    width:50%;*/
     padding: 0px;
     margin: 0px;
 }
@@ -176,9 +173,6 @@ ul{
 }
 #main > div::-webkit-scrollbar-thumb{
   background-color: #F8F8F8;
-  /*border: 10px solid;
-  border-image: url('/scrollbar thumb.png');
-  border-image-slice: 2 2 3 2;*/
   border: 3px solid #2878B0;
   border-right-width: 0px;
   box-sizing: content-box;
@@ -194,16 +188,17 @@ ul{
 
 
 
-#infopanel{
-    width:50%;
-}
 
+ul{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
 li::marker{
     content:none;
 }
 li{
     display:flex;
-    justify-content: space-between;
     align-items: center;
 }
 li span{
@@ -211,6 +206,8 @@ li span{
 }
 li .pokemonname{
     display: inline-block;
+    flex: 1;
+    font-family: monospace;
 }
 li .buttons{
     display: inline-block;
@@ -219,6 +216,15 @@ li img{
     height: 50px;
 }
 
+/* INFO PANEL */
+#infopanel .nameandimgbox{
+    background: linear-gradient(
+    to bottom, 
+    #F0F0F0 75%, 
+    #F8F8F8 25%
+  );
+  background-size: 100% 12px;
+}
 
 /* purple buttons */
 #buttons button{

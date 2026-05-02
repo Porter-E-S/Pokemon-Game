@@ -40,31 +40,14 @@ function SelectTeam() {
       .then(data => {
         data.results.forEach((e)=>{
           e.id = e.url.replace("https://pokeapi.co/api/v2/pokemon/","").replace("/","")
+          e.longid = "000".slice(0, 3-e.id.length)+e.id
         })
         set_pokemonList(data.results);
       })
       .catch(error => {
         console.error('error fetching pokemon list', error);
       });
-      /*.then(async data => {
-        const detailed = await Promise.all(
-          data.results.map((pokemon, index) =>
-            fetch(`https://pokeapi.co/api/v2/pokemon/${index + 1}`)
-              .then( r => r.json())
-              .then(p => ({
-                name: pokemon.name,
-                type: p.types[0].type.name,
-                id: index + 1
-              }))
-        )
-      )
-      set_pokemonList(detailed)
-    })*/
   }, []);
-
-  // add code for loading more pokemon when the user scrolls down
-  // filtering by type
-  // filtering by name
 
   const [isFavesOpen, setFavesOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -86,22 +69,24 @@ function SelectTeam() {
   }) : []
 
   const typeChange = (typeName) => {
-    
     if (Object.keys(typeFilter).includes(typeName)) {
-      //setTypeFilter(typeFilter.filter(t => t !== typeName))
+      setTypeFilter(prev => {
+        const { [typeName]: removed, ...rest } = prev;
+        return rest;
+      })
     } else {
       var id = types.find(t => t.name == typeName).id
       fetch(`https://pokeapi.co/api/v2/type/${id}`)
       .then(r => r.json())
       .then(data => setTypeFilter({...typeFilter, [typeName]:data.pokemon}));
-      //setTypeFilter({...typeFilter, types: [...typeFilter.types, typeName]})
       console.log(typeFilter)
     }
   }
 
   const addToTeam = (pokemon) => {
     if (playerTeam.includes(pokemon)) { //remove pokemon
-      playerTeam.splice(playerTeam.indexOf(pokemon), 1)
+      //playerTeam.splice(playerTeam.indexOf(pokemon), 1)
+      setPlayerTeam(playerTeam => playerTeam.filter(item => item.id !== pokemon.id));
     }
     else if (playerTeam.length >= 3) {
       return
@@ -112,12 +97,31 @@ function SelectTeam() {
     console.log(playerTeam)
   }
 
-  const selectPokemon = (id) => {
+  const selectPokemon = (event, id) => {
+    if (event.target === event.currentTarget) {
+    // prevent clicking the purple buttons from opening pokemon in the info panel
     fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
       .then(r => r.json())
       .then(data => setSelectedPokemon(data));
+    }
   }
 
+  const [favorites, setFavorites] =  useState(() => {
+  const saved = localStorage.getItem("favorites");
+    return saved ? JSON.parse(saved) : [];
+  });
+  function addFavorite(data){
+    if (favorites.includes(data)) { //remove pokemon
+      setFavorites(favorites => favorites.filter(item => item.id !== data.id));
+    }
+    else{
+      setFavorites([...favorites, data])
+    }
+  }
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    console.log(favorites)
+  }, [favorites]);
 
   return (
     <>
@@ -138,7 +142,7 @@ function SelectTeam() {
         <Link to="/battle"><button onClick={() => navigate('/battle', { state: { team: playerTeam } })}>Start Battle</button></Link>
       </div>
 
-      <div class="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
+      <div className="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
         <button className="closefave" onClick={() => setFavesOpen(false)}>Close</button>
       <Favorites open={isFavesOpen}></Favorites>
       </div>
@@ -160,12 +164,14 @@ function SelectTeam() {
       <section id="main">
         <div class="pokemonlist">
       <ul>
-        { filteredList && filteredList.map((data, index)=>(
-          <li onClick={() => selectPokemon(data.id)}>
-            <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+ data.id +".png"}/>
-            <p class="pokemonname">{data.id+". "+data.name}</p>
+        { filteredList && filteredList.map((data)=>(
+          <li key={data.id} onClick={(event) => selectPokemon(event, data.id)}>
+            <img loading="lazy" src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+ data.id +".png"}/>
+            <p class="pokemonname">{data.longid+". "+data.name}</p>
             <div id="buttons">
-              <button class="fave">add to</button><br></br>
+              <button class="fave" onClick={() => addFavorite(data)}>
+                {favorites.includes(data) ? "remove from" : "add to" }
+                </button><br/>
                 <button onClick={() => addToTeam(data)}>
                   {playerTeam.includes(data) ? "remove from" : "add to" } team
                 </button>
@@ -174,12 +180,36 @@ function SelectTeam() {
         ))}
       </ul>
       </div>
-      <div class="pokemonlist"><Favorites></Favorites></div>
+
+      {/* FAVORITES */}
+      <div class="pokemonlist">
+        <ul>
+        { favorites ? favorites.map((data)=>(
+          <li key={data.id} onClick={(event) => selectPokemon(event, data.id)}>
+            <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+data.id+".png"}/>
+            <p className="pokemonname">{data.longid+". "+data.name}</p>
+            <div id="buttons">
+              <button class="fave" onClick={() => addFavorite(data)}>
+                {favorites.includes(data) ? "remove from" : "add to" }
+                </button><br/>
+              <button onClick={() => addToTeam(data)}>
+                  {playerTeam.includes(data) ? "remove from" : "add to" } team
+                </button>
+            </div>
+            </li>
+          // add code for loading sprites
+        )) : <p>no favorites yet...</p>}
+        </ul>
+      </div>
+
+      {/* INFO PANEL */}
       <div id="infopanel">
         {selectedPokemon ? (
           <>
-            <h2>{selectedPokemon.name}</h2>
-            <img src={selectedPokemon.sprites.front_default} />
+            <div class="nameandimgbox">
+              <h2>{selectedPokemon.name}</h2>
+              <img src={selectedPokemon.sprites.front_default} />
+            </div>
             <p>Type: {selectedPokemon.types.map(t => t.type.name).join(', ')}</p>
             <p>Height: {selectedPokemon.height / 10}m</p>
             <p>Weight: {selectedPokemon.weight / 10}kg</p>
