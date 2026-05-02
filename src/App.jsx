@@ -9,29 +9,44 @@ import Battle from './Battle.jsx'
 import Error404 from './Error404.jsx'
 import Results from './Results.jsx'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import Settings from './Settings.jsx'
+import TeamContext from './TeamContext.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
-  
+  const [playerTeam, setPlayerTeam] = useState([]);
+  const addToTeam = (pokemon) => {
+      if (playerTeam.includes(pokemon)) { //remove pokemon
+      setPlayerTeam(playerTeam => playerTeam.filter(item => item.id !== pokemon.id));
+      }
+      else if (playerTeam.length >= 3) {
+      return
+      }
+      else{
+      setPlayerTeam([...playerTeam, pokemon])
+      }
+      console.log(playerTeam)
+  }
+
   return (
-    <BrowserRouter>
-    {/*<nav>
-      links for testing:{" "}
-        <Link to="/">Home</Link> |{" "}
-        <Link to="/pokemon">SelectTeam</Link> |{" "}
-        <Link to="/battle">Battle</Link>
-      </nav>*/}
-      <Routes>
-        <Route path="/" element={<Start />} />
-        <Route path="/pokemon" element={<SelectTeam />} />
-        <Route path="/battle" element={<Battle />} />
-        <Route path="*" element={<Error404 />} />
-        <Route path="/result" element={<Results />} />
-      </Routes>
-      {/*<div id="settingsicon">⚙️</div>
-       needs to make popup toggleable <div id="settingscontainer"><Settings></Settings></div>*/}
-    </BrowserRouter>
+    <TeamContext.Provider value={{ playerTeam, addToTeam }}>
+      <BrowserRouter>
+      {/*<nav>
+        links for testing:{" "}
+          <Link to="/">Home</Link> |{" "}
+          <Link to="/pokemon">SelectTeam</Link> |{" "}
+          <Link to="/battle">Battle</Link>
+        </nav>*/}
+        <Routes>
+          <Route path="/" element={<Start />} />
+          <Route path="/pokemon" element={<SelectTeam />} />
+          <Route path="/battle" element={<Battle />} />
+          <Route path="*" element={<Error404 />} />
+          <Route path="/result" element={<Results />} />
+        </Routes>
+        {/*<div id="settingsicon">⚙️</div>
+        needs to make popup toggleable <div id="settingscontainer"><Settings></Settings></div>*/}
+      </BrowserRouter>
+    </TeamContext.Provider>
   )
 }
 

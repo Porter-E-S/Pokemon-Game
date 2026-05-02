@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import Favorites from './Favorites.jsx';
+import React, { useState, useEffect, useContext } from 'react';
 import './SelectTeam.css';
 import { Link, useNavigate } from 'react-router-dom';
+import TeamContext from './TeamContext.jsx';
 
 
 function SelectTeam() {
@@ -49,12 +49,10 @@ function SelectTeam() {
       });
   }, []);
 
-  const [isFavesOpen, setFavesOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const navigate = useNavigate();
   const [typeFilter, setTypeFilter] = useState({})
-  const [playerTeam, setPlayerTeam] = useState([])
   const filteredList = (Object.keys(typeFilter).length === 0) ? pokemonList : pokemonList ? pokemonList.filter((pokemon, index) => {
     const matchesSearch = pokemon.name.includes(search) || pokemon.id.toString().includes(search)
     var matchesType = []; // to match more than 1 type
@@ -83,26 +81,17 @@ function SelectTeam() {
     }
   }
 
-  const addToTeam = (pokemon) => {
-    if (playerTeam.includes(pokemon)) { //remove pokemon
-      //playerTeam.splice(playerTeam.indexOf(pokemon), 1)
-      setPlayerTeam(playerTeam => playerTeam.filter(item => item.id !== pokemon.id));
-    }
-    else if (playerTeam.length >= 3) {
-      return
-    }
-    else{
-      setPlayerTeam([...playerTeam, pokemon])
-    }
-    console.log(playerTeam)
-  }
+  const {playerTeam, addToTeam} = useContext(TeamContext);
 
   const selectPokemon = (event, id) => {
-    if (event.target === event.currentTarget) {
+    if (event.target.tagName !== "BUTTON") {
     // prevent clicking the purple buttons from opening pokemon in the info panel
-    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
-      .then(r => r.json())
-      .then(data => setSelectedPokemon(data));
+      fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
+        .then(r => r.json())
+        .then(data => setSelectedPokemon(data));
+      if(window.matchMedia('(max-width: 590px)').matches){
+        setTab({pokemon: false, favorites: false, info: true})
+      }
     }
   }
 
@@ -123,6 +112,16 @@ function SelectTeam() {
     console.log(favorites)
   }, [favorites]);
 
+  const [isTypesOpen, setTypesOpen] = useState(false);
+  function openTypes(){
+    if (isTypesOpen){
+      setTypesOpen(false)
+    } else{
+      setTypesOpen(true)
+    }
+  }
+
+  const [tab, setTab] = useState({pokemon: true, favorites: false, info: false});
   return (
     <>
     <div id="selectteam">
@@ -130,26 +129,31 @@ function SelectTeam() {
         <h2>Select Your Team:</h2>
         {/*<button onClick={() => setFavesOpen(true)}>⭐ Favorites</button>*/}
         <div className="teamcontainer">
-          {playerTeam.map((p)=>(
+          {(playerTeam.length > 0) ? playerTeam.map((p)=>(
           <div class="teammember">
+            <button className="remover" onClick={() => addToTeam(p)}>X</button>
             <div class="iconcontainer">
               <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+p.id+".png"}></img>
             </div>
           <p class="pokemonname">{p.name}</p>
           </div>
-          ))}
+          )) : <p class="hint">Select up to 3 pokemon. Selecting less than 3 will result in them being randomly chosen.</p>}
         </div>
-        <Link to="/battle"><button onClick={() => navigate('/battle', { state: { team: playerTeam } })}>Start Battle</button></Link>
+        <Link to="/battle"><button id="startbutton">Start Battle</button></Link>
       </div>
 
-      <div className="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
+      {/*<div className="favecontainer" style={{display:isFavesOpen ? "inline-block" : "none"}}>
         <button className="closefave" onClick={() => setFavesOpen(false)}>Close</button>
-      <Favorites open={isFavesOpen}></Favorites>
-      </div>
+      <div open={isFavesOpen}></div>
+      </div>*/}
 
       {/* SEARCH */}
-      <input class="searchbar" type="text" placeholder="Enter a name or ID" value={search} onChange={e => setSearch(e.target.value)}></input>
-      <div class="typefilters">
+      <div class="searchcontainer">
+        <input class="searchbar" type="text" placeholder="Enter a name or ID" value={search} onChange={e => setSearch(e.target.value)}></input>
+        <button class="opentypes" onClick={()=>openTypes()}>filter types</button>
+      </div>
+      <div className="typefilterscontainer">
+      <div className="typefilters" open={isTypesOpen}>
         {Object.entries(types).map(([index, data])=>(
           <div>
             <label aria-label={data.name}>
@@ -160,41 +164,47 @@ function SelectTeam() {
           </div>
         ))}
       </div>
-
-      <section id="main">
-        <div class="pokemonlist">
-      <ul>
-        { filteredList && filteredList.map((data)=>(
-          <li key={data.id} onClick={(event) => selectPokemon(event, data.id)}>
-            <img loading="lazy" src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+ data.id +".png"}/>
-            <p class="pokemonname">{data.longid+". "+data.name}</p>
-            <div id="buttons">
-              <button class="fave" onClick={() => addFavorite(data)}>
-                {favorites.includes(data) ? "remove from" : "add to" }
-                </button><br/>
-                <button onClick={() => addToTeam(data)}>
-                  {playerTeam.includes(data) ? "remove from" : "add to" } team
-                </button>
-            </div>
-            </li>
-        ))}
-      </ul>
       </div>
 
+      <div id="tabcontainer">
+        <button class="tab pokemontab" open={tab.pokemon} onClick={()=>setTab({pokemon: true, favorites: false, info: false})}>Search Results</button>
+        <button class="tab favoritestab" open={tab.favorites} onClick={()=>setTab({pokemon: false, favorites: true, info: false})}>Favorites</button>
+        <button class="tab infotab" open={tab.info} onClick={()=>setTab({pokemon: false, favorites: false, info: true})}>Info</button>
+      </div>
+      <section id="main">
+        <div class="pokemonlist" open={tab.pokemon}>
+          <ul>
+            { filteredList && filteredList.map((data)=>(
+              <li key={data.id} onClick={(event) => selectPokemon(event, data.id)}>
+                <img loading="lazy" src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+ data.id +".png"}/>
+                <div id="buttons">
+                  <button class="fave" onClick={() => addFavorite(data)}>
+                    {favorites.includes(data) ? "remove from" : "add to" }
+                    </button>
+                    <button onClick={() => addToTeam(data)}>
+                      {playerTeam.includes(data) ? "remove from" : "add to" } team
+                    </button>
+                    <p class="pokemonname">{data.longid+". "+data.name}</p>
+                  </div>
+                </li>
+            ))}
+          </ul>
+        </div>
+
       {/* FAVORITES */}
-      <div class="pokemonlist">
+      <div class="pokemonlist" open={tab.favorites}>
         <ul>
-        { favorites ? favorites.map((data)=>(
+        { favorites.length >0 ? favorites.map((data)=>(
           <li key={data.id} onClick={(event) => selectPokemon(event, data.id)}>
             <img src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons/"+data.id+".png"}/>
-            <p className="pokemonname">{data.longid+". "+data.name}</p>
             <div id="buttons">
               <button class="fave" onClick={() => addFavorite(data)}>
                 {favorites.includes(data) ? "remove from" : "add to" }
-                </button><br/>
+                </button>
               <button onClick={() => addToTeam(data)}>
                   {playerTeam.includes(data) ? "remove from" : "add to" } team
                 </button>
+                <p className="pokemonname">{data.longid+". "+data.name}</p>
             </div>
             </li>
           // add code for loading sprites
@@ -203,23 +213,26 @@ function SelectTeam() {
       </div>
 
       {/* INFO PANEL */}
-      <div id="infopanel">
+      <div id="infopanel" open={tab.info}>
+        {/*<button className="close" onClick={() => setTab({...tab, info:false})}>X</button>*/}
         {selectedPokemon ? (
           <>
             <div class="nameandimgbox">
               <h2>{selectedPokemon.name}</h2>
               <img src={selectedPokemon.sprites.front_default} />
             </div>
-            <p>Type: {selectedPokemon.types.map(t => t.type.name).join(', ')}</p>
-            <p>Height: {selectedPokemon.height / 10}m</p>
-            <p>Weight: {selectedPokemon.weight / 10}kg</p>
-            <p>Abilities: {selectedPokemon.abilities.map(a => a.ability.name).join(', ')}</p>
-            <p>Base Stats:</p>
-            <ul>
-              {selectedPokemon.stats.map(s => (
-                <li key={s.stat.name}>{s.stat.name}: {s.base_stat}</li>
-              ))}
-            </ul>
+            <div class="infocontainer">
+              <p>Type: {selectedPokemon.types.map(t => t.type.name).join(', ')}</p>
+              <p>Height: {selectedPokemon.height / 10}m</p>
+              <p>Weight: {selectedPokemon.weight / 10}kg</p>
+              <p>Abilities: {selectedPokemon.abilities.map(a => a.ability.name).join(', ')}</p>
+              <p>Base Stats:</p>
+              <ul>
+                {selectedPokemon.stats.map(s => (
+                  <li key={s.stat.name}>{s.stat.name}: {s.base_stat}</li>
+                ))}
+              </ul>
+            </div>
           </>
         ) : (
           <p>select a pokemon to view its info</p>

@@ -2,11 +2,12 @@
 
 .start-container {
     position: relative;
-    width: calc(100vh * 16 / 9);
+    /*width: calc(100vh * 16 / 9);*/
     margin: auto;
     height: 100vh;
     background-image: url('src/assets/start bg.png');
     background-size: cover;
+    background-position: center;
 }
 
 .pixelated-image {
@@ -25,3 +26,4 @@
     left: 50%;
     transform: translate(-50%)
 }
+

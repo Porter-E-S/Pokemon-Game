@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useContext} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
 import './Battle.css'
+import TeamContext from './TeamContext.jsx'
 
 const TYPE_MATCHUPS = {
     grass: {
@@ -131,6 +132,7 @@ const getRandomIds = (count) => {
 function Battle() {
 
   //sets up battle state
+  const {playerTeam, setPlayerTeam} = useContext(TeamContext)
   const [playerParty, setPlayerParty] = useState([])
   const [cpuParty, setCpuParty] = useState([])
   const [playerIndex, setPlayerIndex] = useState(0)
@@ -149,16 +151,12 @@ function Battle() {
       const cpuIds = getRandomIds(3)
       const cpuTeam = await Promise.all(cpuIds.map(id => fetchPokemon(id)))
       setCpuParty(cpuTeam)
-
-      const passedTeam = location.state?.team
-      if (passedTeam && passedTeam.length > 0) {
-        const fullTeam = await Promise.all(passedTeam.map(p => fetchPokemon(p.name)))
-        setPlayerParty(fullTeam)
-      } else {
-        const playerIds = getRandomIds(3)
-        const playerTeam = await Promise.all(playerIds.map(id => fetchPokemon(id)))
-        setPlayerParty(playerTeam)
+      const playerIds = Object.values(playerTeam).map(data => data.id)
+      while (playerIds.length < 3){
+        playerIds.push(getRandomIds(1)[0])
       }
+      const party = await Promise.all(playerIds.map(id => fetchPokemon(id)))
+      setPlayerParty(party)
       setPhase("player-turn")
     }
       loadTeams()
@@ -260,6 +258,13 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
   return (
   <>
     <div className="battle-arena pixelated-image">
+      <div className="cpupokemoninfo">
+        <h1 className="pokemonname">{cpuPokemon.name} [{cpuPokemon.type}]</h1>
+        <div className="health-bar-bg">
+          <div className="health-bar" style={{width: `${(cpuPokemon.currentHp / cpuPokemon.maxHp) * 100}%`}}></div>
+        </div>
+        <p className="hptext">HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
+        </div>
       <div
       className={`cpu-pokemon ${cpuAnimation || ""}`}
       onAnimationEnd={() => setCpuAnimation(null)}
@@ -269,13 +274,7 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
           -{damagePopup.amount}
         </span>
       )}
-      <div className="pokemoninfo">
-        <h1 className="pokemonname">{cpuPokemon.name} [{cpuPokemon.type}]</h1>
-        <div className="health-bar-bg">
-          <div className="health-bar" style={{width: `${(cpuPokemon.currentHp / cpuPokemon.maxHp) * 100}%`}}></div>
-        </div>
-        <p className="hptext">HP: {cpuPokemon.currentHp} / {cpuPokemon.maxHp}</p>
-        </div>
+      
         <img className="pokemonimg" src={cpuPokemon.sprite} alt={cpuPokemon.name}/>
         <div className="pokeballs">
           {cpuParty.map((p, i) => (
@@ -284,6 +283,14 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
         </div>
       </div>
 
+      <div class="playerpokemoninfo">
+        <h1 class="pokemonname">{playerPokemon.name} [{playerPokemon.type}]</h1>
+        
+        <div className="health-bar-bg">
+          <div className="health-bar" style={{width: `${(playerPokemon.currentHp / playerPokemon.maxHp) * 100}%`}}></div>
+        </div>
+        <p class="hptext">HP: {playerPokemon.currentHp} / {playerPokemon.maxHp}</p>
+        </div>
       <div
         className={`player-pokemon ${playerAnimation || ""}`}
         onAnimationEnd={() => setPlayerAnimation(null)}
@@ -293,14 +300,7 @@ const cpuAttack = (activeCpuPokemon = cpuPokemon) => {
             -{damagePopup.amount}
           </span>
         )}
-        <div class="pokemoninfo">
-        <h1 class="pokemonname">{playerPokemon.name} [{playerPokemon.type}]</h1>
         
-        <div className="health-bar-bg">
-          <div className="health-bar" style={{width: `${(playerPokemon.currentHp / playerPokemon.maxHp) * 100}%`}}></div>
-        </div>
-        <p class="hptext">HP: {playerPokemon.currentHp} / {playerPokemon.maxHp}</p>
-        </div>
         <img class="pokemonimg" src={playerPokemon.sprite} alt={playerPokemon.name}/>
         <div className="pokeballs">
           {playerParty.map((p, i) => (

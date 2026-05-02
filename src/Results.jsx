@@ -8,10 +8,10 @@ function Results() {
     return (
         <>
             <div class="resultcontainer">
-            <img src={won ? '/win.jpg' : '/lose.png'} alt={won ? 'You win!' : 'You lose!'} />
+            <h1> {won ? 'You win!' : 'You lose!'}</h1>
             <div className="results-buttons">
                 <Link to="/pokemon"><button>Play again?</button></Link>
-                <button>Add pokemon to favorites?</button>
+                
             </div>
             </div>
         </>
